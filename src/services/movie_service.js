@@ -1,10 +1,15 @@
 const axios = require('axios')
+const { log } = require("../db/models")
+const moment = require("moment-timezone")
 
 const MovieServices = {
 
-  searchMovies: async (title, page) => {
+  searchMovies: async (title, page, urlPath) => {
 
     try {
+      // Save data logs
+      await log.create({ url: urlPath, date: moment() })
+
       let result = []
       const data = await axios.get(`https://www.omdbapi.com/?apikey=faf7e5bb&s=${title}&page=${page}`)
       result = data.data.Search
@@ -16,9 +21,12 @@ const MovieServices = {
     }
   },
 
-  detailMovies: async (imdbID, title, page) => {
+  detailMovies: async (imdbID, title, page, urlPath) => {
 
     try {
+      // Save data logs
+      await log.create({ url: urlPath, date: moment() })
+
       const data = await axios.get(`https://www.omdbapi.com/?apikey=faf7e5bb&s=${title}&page=${page}`)
       let result = data.data.Search
 
@@ -37,7 +45,8 @@ const MovieServices = {
     } catch (e) {
       throw new Error(e.message)
     }
-  }
+  },
+
 }
 
 module.exports = MovieServices
