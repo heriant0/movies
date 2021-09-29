@@ -1,8 +1,8 @@
 const request = require('supertest');
+const app = require('../../app')
 
 
-
-describe("GET /search", () => {
+describe("GET /movies/search", () => {
 
   const params = {
     title: "Batman",
@@ -23,22 +23,22 @@ describe("GET /search", () => {
  * response: 200
  * response json : { code : 200, message: "Succesfully get data", data: array}
  */
-  test("200 - Successfully get data", async (done) => {
-    try {
-      const response = await request(app)
-        .get("/search")
-        .send(params)
+  test("200 - Successfully get data", (done) => {
 
-      const { body, status } = response
-      expect(status).toBe(200)
-      expect(body).toHaveProperty("code", 200,)
-      expect(body).toHaveProperty("message", "Succesfully get data")
-      expect(body.data[0]).toEqual(expect.arrayContaining(expected))
+    request(app)
+      .get(`/movies/search?title=${params.title}&page=${params.page}`)
+      .send()
+      .set('Accept', 'application/json')
+      .then(response => {
+        const { body, status } = response
+        expect(status).toBe(200)
+        expect(body).toHaveProperty("code", 200,)
+        expect(body).toHaveProperty("message", "Succesfully get data")
+        expect(body.data[0]).toHaveProperty("data", expected)
 
-      done()
-    } catch (e) {
-      done(e)
-    }
+        done()
+      })
+      .catch(e => done(e))
   })
 
   /**
@@ -47,29 +47,29 @@ describe("GET /search", () => {
  * response: 400
  * response json : { code : 200, message: "Data not found", data: []}
  */
-  test("400 - Data not found", async (done) => {
-    try {
-      const response = await request(app)
-        .get("/search")
-        .send(params)
-
+  test("400 - Data not found", (done) => {
+    
+    request(app)
+    .get(`/movies/search?title=${params.title}&page=${params.page}`)
+    .send()
+    .set('Accept', 'application/json')
+    .then(response => {
       const { body, status } = response
       expect(status).toBe(400)
       expect(body).toHaveProperty("code", 400,)
       expect(body).toHaveProperty("message", "Data not found")
-      expect(body).toHaveProperty("data", [])
+      expect(body).toHaveProperty("data", null)
 
       done()
-    } catch (e) {
-      done(e)
-    }
+    })
+    .catch(e => done(e))
   })
 })
 
 
 
 
-describe("GET /detail", () => {
+describe("GET /movies/detail", () => {
   const params = {
     imdbID: "tt1673430",
     title: "Batman",
@@ -90,45 +90,48 @@ describe("GET /detail", () => {
  * response: 200
  * response json : { code : 200, message: "Succesfully get data", data: object}
  */
-  test("200 - Successfully get data", async (done) => {
-    try {
-      const response = await request(app)
-        .get("/detail")
-        .send(params)
 
-      const { body, status } = response
-      expect(status).toBe(200)
-      expect(body).toHaveProperty("code", 200,)
-      expect(body).toHaveProperty("message", "Succesfully get data")
-      expect(body.data).toEquel(expect.objectContaining(expected))
+  test("200 - Successfully get data", (done) => {
+    request(app)
+      .get(`/movies/detail?imdbID=${params.imdbID}&title=${params.title}&page=${params.page}`)
+      .send()
+      .set('Accept', 'application/json')
+      .then(response => {
+        const { body, status } = response
+        expect(status).toBe(200)
+        expect(body).toHaveProperty("code", 200,)
+        expect(body).toHaveProperty("message", "Succesfully get data")
+        expect(body).toHaveProperty("data", expected)
 
-      done()
-    } catch (e) {
-      done(e)
-    }
+        done()
+      })
+      .catch(e => {
+        done(e)
+      })
+
+
   })
+  /**
+   * Testing Detail Movie
+   * request params : imdbID: "tt1673430", title : "Batman", page : 2
+   * response: 400
+   * response json : { code : 400, message: "Data not found", data: null}
+   */
+  test("400 - Data not found", (done) => {
+    request(app)
+      .get(`/movies/detail?imdbID=xx123&title=${params.title}&page=${params.page}`)
+      .send()
+      .set('Accept', 'application/json')
+      .then(response => {
+        const { body, status } = response
+        expect(status).toBe(200)
+        expect(body).toHaveProperty("code", 400,)
+        expect(body).toHaveProperty("message", "Data not found")
+        expect(body).toHaveProperty("data", null)
 
-/**
- * Testing Detail Movie
- * request params : imdbID: "tt1673430", title : "Batman", page : 2
- * response: 400
- * response json : { code : 400, message: "Data not found", data: null}
- */
-  test("400 - Data not found", async (done) => {
-    try {
-      const response = await request(app)
-        .get("/detail")
-        .send(params)
+        done()
 
-      const { body, status } = response
-      expect(status).toBe(400)
-      expect(body).toHaveProperty("code", 400,)
-      expect(body).toHaveProperty("message", "Data not found")
-      expect(body).toHaveProperty("data", null)
-
-      done()
-    } catch (e) {
-      done(e)
-    }
+      })
+      .catch(e => done(e))
   })
 })
