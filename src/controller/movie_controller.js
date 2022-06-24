@@ -22,7 +22,6 @@ class Movie {
           data: null
         }
       }
-
     } catch (e) {
       next(e)
     }
