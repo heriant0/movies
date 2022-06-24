@@ -44,8 +44,6 @@ class Movie {
       } else {
         return utils.response(res, next, 200, "Succesfully get data", result)
       }
-
-
     } catch (e) {
       next(e)
     }
