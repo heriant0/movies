@@ -66,9 +66,6 @@ describe("GET /movies/search", () => {
   })
 })
 
-
-
-
 describe("GET /movies/detail", () => {
   const params = {
     imdbID: "tt1673430",
